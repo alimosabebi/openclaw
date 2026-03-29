@@ -71,7 +71,7 @@ function parseAllowedOrigins(rawValue) {
       if (!Array.isArray(parsed)) {
         throw new Error('JSON value must be an array');
       }
-      return parsed;
+      return parsed.filter(item => typeof item === 'string');
     } catch (error) {
       throw new Error(`Invalid JSON array: ${error.message}`);
     }

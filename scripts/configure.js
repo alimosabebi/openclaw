@@ -9,7 +9,6 @@ const path = require("path");
 
 // ── Import Utilities ─────────────────────────────────────────────────────────
 const {
-  REGEX,
   ENV_VAR,
   EXIT_CODE,
   coerceType,
@@ -31,8 +30,10 @@ fs.mkdirSync(STATE_DIR, { recursive: true });
 fs.mkdirSync(WORKSPACE_DIR, { recursive: true });
 
 // Deep merge: source into target. Arrays are replaced, not concatenated.
+const UNSAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
 function deepMerge(target, source) {
   for (const key of Object.keys(source)) {
+    if (UNSAFE_KEYS.has(key)) continue;
     if (
       source[key] && typeof source[key] === "object" && !Array.isArray(source[key]) &&
       target[key] && typeof target[key] === "object" && !Array.isArray(target[key])
@@ -615,9 +616,7 @@ if (process.env.BROWSER_CDP_URL) {
   console.log("[configure] browser configured (from custom JSON)");
 }
 
-// ── Configuration Utilities imported from ./utils.js ─────────────────────────
-
-// ── Configuration Parsing (uses utilities from ./utils.js) ──────────────────
+// ── Dynamic Configuration (dot-notation, allowed origins, JSON) ─────────────
 
 /**
  * Applies dot-notation environment variables to the config object.
@@ -637,6 +636,12 @@ function applyDotNotationEnvVars() {
 
     const pathSegments = pathPart.split('__').filter(Boolean);
     if (pathSegments.length === 0) {
+      continue;
+    }
+
+    // Guard against prototype pollution
+    if (pathSegments.some(s => UNSAFE_KEYS.has(s))) {
+      console.warn(`[configure] dot-notation: skipping unsafe key in ${key}`);
       continue;
     }
 
@@ -679,11 +684,13 @@ function applyAllowedOrigins() {
   }
 
   // Automatically inject Coolify's FQDN if we are running in a Coolify environment
-  const coolifyFqdn = process.env.COOLIFY_FQDN || process.env.COOLIFY_URL;
-  if (coolifyFqdn && !origins.includes(coolifyFqdn)) {
-    // Some Coolify injects might have trailing slashes
-    origins.push(coolifyFqdn.replace(/\/+$/, ""));
-    console.log(`[configure] injected Coolify origin: ${coolifyFqdn}`);
+  const rawFqdn = process.env.COOLIFY_FQDN || process.env.COOLIFY_URL;
+  if (rawFqdn) {
+    const cleanFqdn = rawFqdn.replace(/\/+$/, "");
+    if (cleanFqdn && !origins.includes(cleanFqdn)) {
+      origins.push(cleanFqdn);
+      console.log(`[configure] injected Coolify origin: ${cleanFqdn}`);
+    }
   }
 
   if (origins.length > 0) {

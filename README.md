@@ -381,6 +381,9 @@ OPENCLAW__channels__discord__customSetting=value
 
 **Auto-typing:** `true`/`false` → boolean, integers → number, floats → number, otherwise string. Use `[]` suffix for arrays (comma-separated).
 
+> **Precedence (highest wins):** `OPENCLAW_CONFIG_JSON` > `OPENCLAW__*` dot-notation > dedicated env vars (e.g. `TELEGRAM_BOT_TOKEN`) > custom JSON mount > persisted config.
+> If both a dedicated env var and a dot-notation var set the same key, the dot-notation value wins.
+
 ### JSON Config via Env Var (OPENCLAW_CONFIG_JSON)
 
 Pass partial or full config as a JSON string. This is parsed **after** dot-notation vars, so it can override them. Invalid JSON will cause the container to exit with an error.
