@@ -4,7 +4,7 @@ services:
     environment:
       # Provider (at least one required)
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENCODE_API_KEY=${OPENCODE_API_KEY}
+      #- OPENCODE_API_KEY=${OPENCODE_API_KEY}
       - OPENCLAW_PRIMARY_MODEL=openai/gpt-4.1
       # Auth
       - AUTH_USERNAME=${AUTH_USERNAME:-admin}
@@ -19,7 +19,7 @@ services:
       # Dot-notation config (optional - for settings not covered by dedicated env vars)
       - OPENCLAW__channels__telegram__textChunkLimit=3500
       # JSON config via env var (optional - partial or full config as JSON)
-      - OPENCLAW_CONFIG_JSON={"agents":{"defaults":{"model":{"fallback":"gemini/gemini-3-pro"}}}}
+      #- OPENCLAW_CONFIG_JSON={"agents":{"defaults":{"model":{"fallback":"gemini/gemini-3-pro"}}}}
       # Hooks (optional)
       - HOOKS_ENABLED=true
       - HOOKS_TOKEN=my-hook-secret
