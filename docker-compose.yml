@@ -17,7 +17,7 @@ services:
       - BROWSER_DEFAULT_PROFILE=openclaw
       - BROWSER_EVALUATE_ENABLED=true
       # CORS / Allowed Origins (optional)
-      - OPENCLAW_ALLOWED_ORIGINS=http://localhost:5173,https://app.example.com
+      - OPENCLAW_ALLOWED_ORIGINS=http://localhost:5173,https://openclaw2.bunchoftips.com
       # Dot-notation config (optional - for settings not covered by dedicated env vars)
       - OPENCLAW__channels__telegram__textChunkLimit=3500
       # JSON config via env var (optional - partial or full config as JSON)
